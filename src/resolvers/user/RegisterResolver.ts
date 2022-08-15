@@ -1,3 +1,5 @@
+import argon2 from "argon2";
+import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
 import redis from "../../redis";
 import { AuthenticationInput } from "../../shared/AuthenticationInput";
@@ -8,8 +10,6 @@ import { createConfirmationLink } from "../../utilities/createConfirmationLink";
 import { generateVerifyMailOptions } from "../../utilities/generateMailOptions";
 import { sendEmail } from "../../utilities/sendMail";
 import { validateRegister } from "../../validators/register";
-import { Mutation, Arg, Ctx, Resolver } from "type-graphql";
-import argon2 from "argon2";
 
 @Resolver()
 export class RegisterResolver {

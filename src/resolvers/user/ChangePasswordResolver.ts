@@ -1,5 +1,4 @@
 import argon2 from "argon2";
-import { removeUserSessions } from "../../utilities/removeUserSessions";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { changePasswordPrefix } from "../../constants";
 import { User } from "../../entity/User";
@@ -9,6 +8,7 @@ import { PASSWORD_ERROR } from "../../shared/Errors/password";
 import { TOKEN_ERROR } from "../../shared/Errors/token";
 import { UserResponse } from "../../shared/UserResponse";
 import { MyContext } from "../../types";
+import { removeUserSessions } from "../../utilities/removeUserSessions";
 
 @Resolver(User)
 export class ChangePasswordResolver {

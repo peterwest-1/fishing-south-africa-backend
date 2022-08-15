@@ -1,3 +1,5 @@
+import argon2 from "argon2";
+import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { userSessionIDPrefix } from "../../constants";
 import { User } from "../../entity/User";
 import redis from "../../redis";
@@ -7,8 +9,6 @@ import { EMAIL_ERROR } from "../../shared/Errors/email";
 import { PASSWORD_ERROR } from "../../shared/Errors/password";
 import { UserResponse } from "../../shared/UserResponse";
 import { MyContext } from "../../types";
-import { Resolver, Mutation, Arg, Ctx } from "type-graphql";
-import argon2 from "argon2";
 
 @Resolver()
 export class LoginResolver {
