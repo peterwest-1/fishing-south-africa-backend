@@ -27,9 +27,7 @@ cd backend-boilerplate
 yarn
 ```
 
-- Download confired GCS config JSON
--
-
+- Download configured GCS config JSON
 - Create database and change config in `src/data-source.ts` accordingly
 - Start the server
 
