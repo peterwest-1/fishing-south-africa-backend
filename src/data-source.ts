@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { __prod__ } from "./constants";
+import { FishCaught } from "./entity/FishCaught";
 import { User } from "./entity/User";
 require("dotenv").config();
 
@@ -9,7 +10,7 @@ export const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
   synchronize: !__prod__,
   logging: !__prod__,
-  entities: [User],
+  entities: [User, FishCaught],
   migrations: [],
   subscribers: [],
 });

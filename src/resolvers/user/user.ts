@@ -1,7 +1,8 @@
 import argon2 from "argon2";
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
 import { COOKIE_NAME, userSessionIDPrefix } from "../../constants";
 import { User } from "../../entity/User";
+import { isAuthenticated } from "../../middleware/isAuthenticated";
 import redis from "../../redis";
 import { AuthenticationInput } from "../../shared/AuthenticationInput";
 import { ACCOUNT_ERROR } from "../../shared/Errors/account";
@@ -10,13 +11,57 @@ import { PASSWORD_ERROR } from "../../shared/Errors/password";
 import { UserResponse } from "../../shared/UserResponse";
 import { MyContext } from "../../types";
 import { createConfirmationLink } from "../../utilities/createConfirmationLink";
+import { generateGCSSignedURL } from "../../utilities/generateGCSSignedURL";
 import { generateVerifyMailOptions } from "../../utilities/generateMailOptions";
 import { removeUserSessions } from "../../utilities/removeUserSessions";
 import { sendEmail } from "../../utilities/sendMail";
 import { validateRegister } from "../../validators/register";
+import { v4 } from "uuid";
+
+@ObjectType()
+export class ProfileInformationResponse {
+  @Field(() => String, { nullable: true })
+  error?: string;
+
+  @Field(() => String, { nullable: true })
+  signedURL?: string;
+}
 
 @Resolver(User)
 export class UserResolver {
+  @Query(() => Boolean)
+  @UseMiddleware(isAuthenticated)
+  async isUsernameAvailable(@Arg("username") username: string): Promise<boolean> {
+    const user = await User.findOneBy({ username });
+    if (user) {
+      return false;
+    }
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuthenticated)
+  async setUsername(@Arg("username") username: string, @Ctx() { req }: MyContext) {
+    await User.update({ id: req.session.userId }, { username });
+    return true;
+  }
+
+  @Mutation(() => ProfileInformationResponse)
+  @UseMiddleware(isAuthenticated)
+  async addProfileInformation(
+    @Arg("username") username: string,
+    @Arg("filename") filename: string,
+    @Ctx() { req }: MyContext
+  ) {
+    await User.update({ id: req.session.userId }, { username });
+
+    const url = await generateGCSSignedURL("profiles", req.session.userId as string);
+
+    return {
+      signedURL: url,
+    };
+  }
+
   @Query(() => User, { nullable: true })
   me(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {

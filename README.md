@@ -27,6 +27,9 @@ cd backend-boilerplate
 yarn
 ```
 
+- Download confired GCS config JSON
+-
+
 - Create database and change config in `src/data-source.ts` accordingly
 - Start the server
 
@@ -36,9 +39,18 @@ yarn dev
 
 ## Consider changing
 
+- Change ForgotPasswordResolver email to link forgot email on front end
+
 ## Usage
 
-- Change ForgotPasswordResolver email to link forgot email on front end
+## Notes
+
+  <!-- // const defaultCookie = {
+  //   maxAge: COOKIE_LENGTH, // 1 year
+  //   httpOnly: true,
+  //   sameSite: "lax",
+  //   secure: __prod__, // cookie only works in https
+  // }; -->
 
 ## License
 

@@ -25,14 +25,8 @@ const main = async () => {
   const usingApollo = true;
 
   const apolloCors = { origin: true, credentials: true };
-  app.use(cors(usingApollo ? apolloCors : { origin: "http://localhost:3000", credentials: true }));
+  app.use(cors(usingApollo ? apolloCors : { origin: process.env.CORS_ORIGIN, credentials: true }));
 
-  // const defaultCookie = {
-  //   maxAge: COOKIE_LENGTH, // 1 year
-  //   httpOnly: true,
-  //   sameSite: "lax",
-  //   secure: __prod__, // cookie only works in https
-  // };
   app.use(
     session({
       name: COOKIE_NAME,

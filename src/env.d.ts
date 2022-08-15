@@ -6,8 +6,9 @@ declare global {
       PORT: string;
       CORS_ORIGIN: string;
       SESSION_SECRET: string;
+      GCS_BUCKET_NAME: string;
     }
   }
 }
 
-export {}
+export {};
