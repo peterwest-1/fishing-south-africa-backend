@@ -1,13 +1,12 @@
-import { FishCaught } from "../../entity/FishCaught";
+import { SignedURLResponse } from "../../shared/SignedURLResponse";
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
-import { FishCaughtInput } from "../../shared/FishCaughtInput";
-import { isAuthenticated } from "../../middleware/isAuthenticated";
-import { MyContext } from "../../types";
 import { AppDataSource } from "../../data-source";
+import { FishCaught } from "../../entity/FishCaught";
+import { isAuthenticated } from "../../middleware/isAuthenticated";
+import { FishCaughtInput } from "../../shared/FishCaughtInput";
 import { FishCaughtResponse } from "../../shared/FishCaughtResponse";
-import { User } from "../../entity/User";
-import { generateGCSSignedURL, makeGCSFilePublic } from "../../utilities/generateGCSSignedURL";
-import { SignedURLResponse } from "../user/user";
+import { MyContext } from "../../types";
+import { generateGCSSignedURL } from "../../utilities/generateGCSSignedURL";
 
 @Resolver()
 export class FishCaughtResolver {
@@ -36,14 +35,6 @@ export class FishCaughtResolver {
     return {
       signedURL: url,
     };
-  }
-
-  @Mutation(() => String, { nullable: true })
-  @UseMiddleware(isAuthenticated)
-  async confirmFishImageUploadAndMakePublic(@Arg("fishCaughtId") fishCaughtId: string): Promise<string | null> {
-    const url = await makeGCSFilePublic("fishes", fishCaughtId);
-    console.log(url);
-    return "hi";
   }
 
   @Mutation(() => FishCaughtResponse)
