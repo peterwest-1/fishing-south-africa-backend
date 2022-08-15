@@ -4,6 +4,10 @@ import { FishCaughtInput } from "../../shared/FishCaughtInput";
 import { isAuthenticated } from "../../middleware/isAuthenticated";
 import { MyContext } from "../../types";
 import { AppDataSource } from "../../data-source";
+import { FishCaughtResponse } from "../../shared/FishCaughtResponse";
+import { User } from "../../entity/User";
+import { generateGCSSignedURL, makeGCSFilePublic } from "../../utilities/generateGCSSignedURL";
+import { SignedURLResponse } from "../user/user";
 
 @Resolver()
 export class FishCaughtResolver {
@@ -24,15 +28,41 @@ export class FishCaughtResolver {
     return await FishCaught.find({});
   }
 
-  @Mutation(() => FishCaught)
+  @Mutation(() => SignedURLResponse)
   @UseMiddleware(isAuthenticated)
-  async createFishCaught(@Arg("input", () => FishCaughtInput) input: FishCaughtInput, @Ctx() { req }: MyContext) {
+  async fishImageUploadURL(@Arg("fishCaughtId") fishCaughtId: string) {
+    const url = await generateGCSSignedURL("fishes", fishCaughtId);
+
+    return {
+      signedURL: url,
+    };
+  }
+
+  @Mutation(() => String, { nullable: true })
+  @UseMiddleware(isAuthenticated)
+  async confirmFishImageUploadAndMakePublic(@Arg("fishCaughtId") fishCaughtId: string): Promise<string | null> {
+    const url = await makeGCSFilePublic("fishes", fishCaughtId);
+    console.log(url);
+    return "hi";
+  }
+
+  @Mutation(() => FishCaughtResponse)
+  @UseMiddleware(isAuthenticated)
+  async createFishCaught(
+    @Arg("input", () => FishCaughtInput) input: FishCaughtInput,
+    @Ctx() { req }: MyContext
+  ): Promise<FishCaughtResponse> {
     const fishCaught = FishCaught.create({
       ...input,
       userId: req.session.userId,
     });
 
-    return await fishCaught.save();
+    if (!fishCaught) {
+      return { errors: [{ field: "thing", message: "could not create fish" }] };
+    }
+
+    await fishCaught.save();
+    return { fishCaught };
   }
 
   @Mutation(() => FishCaught, { nullable: true })

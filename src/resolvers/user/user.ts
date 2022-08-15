@@ -19,7 +19,7 @@ import { validateRegister } from "../../validators/register";
 import { v4 } from "uuid";
 
 @ObjectType()
-export class ProfileInformationResponse {
+export class SignedURLResponse {
   @Field(() => String, { nullable: true })
   error?: string;
 
@@ -46,7 +46,7 @@ export class UserResolver {
     return true;
   }
 
-  @Mutation(() => ProfileInformationResponse)
+  @Mutation(() => SignedURLResponse)
   @UseMiddleware(isAuthenticated)
   async addProfileInformation(
     @Arg("username") username: string,

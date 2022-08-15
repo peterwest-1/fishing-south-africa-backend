@@ -8,6 +8,7 @@ import { AppDataSource } from "./data-source";
 import redis from "./redis";
 import { confirmEmail } from "./routes/confirmEmail";
 import { MyContext } from "./types";
+import { configureBucketCORS } from "./utilities/configureGCSBucketCORS";
 import { createSchema } from "./utilities/createSchema";
 require("dotenv").config();
 
@@ -68,6 +69,8 @@ const main = async () => {
       credentials: true,
     },
   });
+
+  await configureBucketCORS();
 
   app.listen(process.env.PORT, () => {
     console.log(`${APP_NAME} Server: Started on localhost:${process.env.PORT}`);
